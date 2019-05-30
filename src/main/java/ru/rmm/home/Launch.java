@@ -154,8 +154,19 @@ public class Launch extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(filter.getText().length()>0){
-                    new SaveForm(0,filter.getText(),"Save filter");
+                    saveForm(0,filter.getText(),"Save filter");
             }}
+        });
+
+        JButton saveMessageButton = new JButton();
+        saveMessageButton.setToolTipText("Save message");
+        saveMessageButton.setIcon(new ImageIcon(saveIcon));
+        saveMessageButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(message.getText().length()>0){
+                    saveForm(1,message.getText(),"Save message");
+                }}
         });
 
 
@@ -165,10 +176,18 @@ public class Launch extends JFrame {
         loadFilterButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                openForm();
+                openForm(0,"Open filter");
             }
         });
-
+        JButton loadMessageButton = new JButton();
+        loadMessageButton.setToolTipText("Open message");
+        loadMessageButton.setIcon(new ImageIcon(openIcon));
+        loadMessageButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                openForm(1,"Open message");
+            }
+        });
 
         JScrollPane logSP = new JScrollPane(logArea);
         logArea.setFont(new Font(logArea.getFont().getFontName(), 3, 12));
@@ -183,19 +202,23 @@ public class Launch extends JFrame {
         buttonsPanel.setLayout(new MigLayout());
         buttonsPanel.add(check, "wrap, span 2, align center");
         buttonsPanel.add(checkSelected, "align center, wrap, span 2");
-        buttonsPanel.add(formatFilter, "align center");
-        buttonsPanel.add(formatMessage, "align center, wrap");
+//        buttonsPanel.add(formatFilter, "align center");
+//        buttonsPanel.add(formatMessage, "align center, wrap");
 
         MigLayout ml = new MigLayout();
 
         JPanel panel = new JPanel(ml);
 
 
-        panel.add(filterLabel, "split 3, grow");
+        panel.add(filterLabel, "split 4, grow");
+        panel.add(formatFilter);
         panel.add(saveFilterButton, "w 18:20:22, h 18:20:22");
         panel.add(loadFilterButton, "w 18:20:22, h 18:20:22");
         panel.add(new Panel());
-        panel.add(messageLabel, "wrap");
+        panel.add(messageLabel, "split 4, grow");
+        panel.add(saveMessageButton, "w 18:20:22, h 18:20:22");
+        panel.add(loadMessageButton, "w 18:20:22, h 18:20:22");
+        panel.add(formatMessage, "wrap");
         panel.add(filter.getContainerWithLines(), "grow, width 45%, height 80%");
         panel.add(buttonsPanel);
         panel.add(message.getContainerWithLines(), "grow, width 45%, wrap");
@@ -205,13 +228,15 @@ public class Launch extends JFrame {
 
         //JScrollPane jsp = new JScrollPane(panel);
 
+        log("NOTE: Use Ctrl+MouseWheel to zoom.");
+
         add(panel);
         pack();
         setVisible(true);
 
     }
 
-    private void log(String msg) {
+    public void log(String msg) {
 
         logArea.append((new SimpleDateFormat("dd.MM HH:mm:ss:SSS")).format(new Date()) + "::" + msg + "\n");
     }
@@ -219,9 +244,15 @@ public class Launch extends JFrame {
     public void setFilter(String filter){
         this.filter.setText(filter);
     }
+    public void setMessage(String message){
+        this.message.setText(message);
+    }
 
-    private void openForm(){
-        new OpenForm(this,0,"Open filter");
+    private void saveForm(int type, String text, String title){
+        new SaveForm(this,type,text,title);
+    }
+    private void openForm(int type, String title){
+        new OpenForm(this,type,title);
     }
 
 

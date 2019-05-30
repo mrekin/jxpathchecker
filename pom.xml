@@ -146,7 +146,12 @@
                                 <include>**</include>
                             </includes>
                         </filter>
-                                                       
+                	<filter>
+				<artifact>org.xerial:sqlite-jdbc</artifact>
+                            <includes>
+                                <include>**</include>
+                            </includes>
+                        </filter>                                                                                      
 			    </filters>
                             <transformers>
                                 <transformer

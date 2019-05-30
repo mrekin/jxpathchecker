@@ -33,8 +33,8 @@ public class DBLayer {
 
                 Statement statement = conn.createStatement();
 
-                statement.executeUpdate("create table filters (name string, filter string)");
-                statement.executeUpdate("create table messages (name string, message string)");
+                statement.executeUpdate("create table filters (name string UNIQUE NOT NULL PRIMARY KEY, filter string)");
+                statement.executeUpdate("create table messages (name string UNIQUE NOT NULL PRIMARY KEY, message string)");
             }
 
         } catch (SQLException e) {
@@ -49,6 +49,26 @@ public class DBLayer {
             try {
                 Statement statement = conn.createStatement();
                 ResultSet rs = statement.executeQuery("select * from filters");
+                while(rs.next())
+                {
+                    // read the result set
+
+                    System.out.println("name = " + rs.getString("name"));
+                    fl.add(rs.getString("name"));
+                }
+            } catch (SQLException se) {
+                System.out.println(se.getLocalizedMessage());
+            }
+        }
+        return fl;
+    }
+
+    public ArrayList<String> getMessagesList() {
+        ArrayList<String> fl = new ArrayList<>();
+        if (conn != null) {
+            try {
+                Statement statement = conn.createStatement();
+                ResultSet rs = statement.executeQuery("select * from messages");
                 while(rs.next())
                 {
                     // read the result set
@@ -86,6 +106,29 @@ public class DBLayer {
         return filter;
     }
 
+    public String getMessage(String name) {
+        String message = "";
+        try {
+            Statement statement = conn.createStatement();
+            ResultSet rs = statement.executeQuery("select * from messages");
+            while(rs.next())
+            {
+                // read the result set
+
+                System.out.println("name = " + rs.getString("name"));
+                if(name.equals(rs.getString("name"))){
+                    message = rs.getString("message");
+                    break;
+                }
+
+            }
+        } catch (SQLException se) {
+            System.out.println(se.getLocalizedMessage());
+        }
+
+        return message;
+    }
+
     public String setFilter(String name, String filter) {
 
         try {
@@ -108,6 +151,30 @@ public class DBLayer {
         }
 
         return filter;
+    }
+
+    public String setMessage(String name, String message) {
+
+        try {
+            /*
+            Statement statement = conn.createStatement();
+            statement.executeUpdate("insert into messages values("+name+", "+message+");");
+*/
+            PreparedStatement preparedStatement = null;
+            // ? - место вставки нашего значеня
+            preparedStatement = conn.prepareStatement(
+                    "insert into messages values(?,?);");
+            //Устанавливаем в нужную позицию значения определённого типа
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, message);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException se) {
+            System.out.println(se.getLocalizedMessage());
+        }
+
+        return message;
     }
 
 

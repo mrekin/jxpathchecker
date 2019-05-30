@@ -18,24 +18,36 @@ public class OpenForm extends JFrame {
         setLocationRelativeTo(this.getParent());
         //setPreferredSize(new Dimension(400, 200));
 
-        MigLayout ml = new MigLayout();
+        MigLayout ml = new MigLayout("w 250::");
 
-        JLabel lb = new JLabel("Filter name:");
+        JLabel lb = new JLabel("Name:");
 
-        JList<String> nameField = new JList<String>(DBLayer.getInstance().getFilersList().toArray(new String[0]));
-
+        JList<String> nameField1 = null;
+        if(type==0) {
+            nameField1 = new JList<String>(DBLayer.getInstance().getFilersList().toArray(new String[0]));
+        }else {
+            nameField1 = new JList<String>(DBLayer.getInstance().getMessagesList().toArray(new String[0]));
+        }
         JButton saveB = new JButton("Open");
         String name = "";
+        JList<String> nameField = nameField1;
 
         saveB.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String name = nameField.getSelectedValue();
+                String name;
+                if(nameField.getSelectedIndex() == -1) {
+                    return;
+                }
+                else{
+                    name = nameField.getSelectedValue();
+                }
                 if(type==0){
                     String f = DBLayer.getInstance().getFilter(name);
                    pf.setFilter(f);
                 }else{
-
+                    String f = DBLayer.getInstance().getMessage(name);
+                    pf.setMessage(f);
                 }
             }
         });
