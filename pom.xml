@@ -148,17 +148,18 @@
                         </filter>
                 	<filter>
 				<artifact>org.xerial:sqlite-jdbc</artifact>
-                            <includes>
+                            <excludes>
                                 <include>**</include>
-                            </includes>
+                            </excludes>
                         </filter>                                                                                      
 			    </filters>
                             <transformers>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <manifestEntries>
-                                    <Main-Class>ru.rmm.home.Launch</Main-Class>
-                  </manifestEntries>
+                		  <manifestEntries>
+                        	        <Main-Class>ru.rmm.home.Launch</Main-Class>
+					<Class-Path>lib/sqlite_jdbc.jar</Class-Path>
+		                  </manifestEntries>
                                 </transformer>
                             </transformers>
                         </configuration>

@@ -17,9 +17,8 @@ public class JXPSyntaxColorizer extends DefaultSyntaxColorizer {
     private Element rootElement;
 
 
-
     public JXPSyntaxColorizer(JXTextPane component, HashMap<String, Color> keywords) {
-        super(component,keywords);
+        super(component, keywords);
         this.component = component;
         this.doc = component.getStyledDocument();
         this.undo = component.getUndoableEditListener();

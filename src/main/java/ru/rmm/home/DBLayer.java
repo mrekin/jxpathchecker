@@ -9,6 +9,7 @@ public class DBLayer {
     static final String JDBC_URL = "jdbc:sqlite:" + DB_NAME;
     private Connection conn = null;
     static DBLayer instance = null;
+    public static boolean driverLoaded = false;
 
     private DBLayer() {
 
@@ -16,8 +17,18 @@ public class DBLayer {
 
     }
 
-    public static DBLayer getInstance(){
-        if(instance==null){
+    public static void checkDriver() {
+        try {
+            Class.forName("org.sqlite.JDBC");
+            driverLoaded = true;
+            System.out.println("Driver class found");
+        } catch (ClassNotFoundException ce) {
+            System.out.println("Class not found: " + ce.getLocalizedMessage());
+        }
+    }
+
+    public static DBLayer getInstance() {
+        if (instance == null) {
             instance = new DBLayer();
         }
         return instance;
@@ -25,6 +36,8 @@ public class DBLayer {
 
     private void init() {
         try {
+            checkDriver();
+            driverLoaded = true;
             conn = DriverManager.getConnection(JDBC_URL);
             if (conn != null) {
                 DatabaseMetaData meta = conn.getMetaData();
@@ -49,8 +62,7 @@ public class DBLayer {
             try {
                 Statement statement = conn.createStatement();
                 ResultSet rs = statement.executeQuery("select * from filters");
-                while(rs.next())
-                {
+                while (rs.next()) {
                     // read the result set
 
                     System.out.println("name = " + rs.getString("name"));
@@ -69,8 +81,7 @@ public class DBLayer {
             try {
                 Statement statement = conn.createStatement();
                 ResultSet rs = statement.executeQuery("select * from messages");
-                while(rs.next())
-                {
+                while (rs.next()) {
                     // read the result set
 
                     System.out.println("name = " + rs.getString("name"));
@@ -88,12 +99,11 @@ public class DBLayer {
         try {
             Statement statement = conn.createStatement();
             ResultSet rs = statement.executeQuery("select * from filters");
-            while(rs.next())
-            {
+            while (rs.next()) {
                 // read the result set
 
                 System.out.println("name = " + rs.getString("name"));
-                if(name.equals(rs.getString("name"))){
+                if (name.equals(rs.getString("name"))) {
                     filter = rs.getString("filter");
                     break;
                 }
@@ -111,12 +121,11 @@ public class DBLayer {
         try {
             Statement statement = conn.createStatement();
             ResultSet rs = statement.executeQuery("select * from messages");
-            while(rs.next())
-            {
+            while (rs.next()) {
                 // read the result set
 
                 System.out.println("name = " + rs.getString("name"));
-                if(name.equals(rs.getString("name"))){
+                if (name.equals(rs.getString("name"))) {
                     message = rs.getString("message");
                     break;
                 }
@@ -177,5 +186,39 @@ public class DBLayer {
         return message;
     }
 
+    public void deleteMessage(String name) {
 
+        try {
+            PreparedStatement preparedStatement = null;
+
+            preparedStatement = conn.prepareStatement(
+                    "delete from  messages where name = ? ;");
+            preparedStatement.setString(1, name);
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException se) {
+            System.out.println(se.getLocalizedMessage());
+        }
+
+        return;
+    }
+
+
+    public void deleteFilter(String name) {
+
+        try {
+            PreparedStatement preparedStatement = null;
+
+            preparedStatement = conn.prepareStatement(
+                    "delete from  filters where name = ? ;");
+            preparedStatement.setString(1, name);
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException se) {
+            System.out.println(se.getLocalizedMessage());
+        }
+
+        return;
+    }
 }
+

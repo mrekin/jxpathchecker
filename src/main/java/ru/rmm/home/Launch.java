@@ -51,11 +51,11 @@ public class Launch extends JFrame {
 
     ;
 
-    public void launch() {
+    public boolean launch() {
 
         System.setProperty("sun.java2d.dpiaware", "false");
 
-        
+
         setTitle("JXPath Checker");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(1200, 600));
@@ -153,9 +153,10 @@ public class Launch extends JFrame {
         saveFilterButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(filter.getText().length()>0){
-                    saveForm(0,filter.getText(),"Save filter");
-            }}
+                if (filter.getText().length() > 0) {
+                    saveForm(0, filter.getText(), "Save filter");
+                }
+            }
         });
 
         JButton saveMessageButton = new JButton();
@@ -164,9 +165,10 @@ public class Launch extends JFrame {
         saveMessageButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(message.getText().length()>0){
-                    saveForm(1,message.getText(),"Save message");
-                }}
+                if (message.getText().length() > 0) {
+                    saveForm(1, message.getText(), "Save message");
+                }
+            }
         });
 
 
@@ -176,7 +178,7 @@ public class Launch extends JFrame {
         loadFilterButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                openForm(0,"Open filter");
+                openForm(0, "Open filter");
             }
         });
         JButton loadMessageButton = new JButton();
@@ -185,7 +187,7 @@ public class Launch extends JFrame {
         loadMessageButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                openForm(1,"Open message");
+                openForm(1, "Open message");
             }
         });
 
@@ -208,23 +210,46 @@ public class Launch extends JFrame {
         MigLayout ml = new MigLayout();
 
         JPanel panel = new JPanel(ml);
+        DBLayer.checkDriver();
+        if (DBLayer.driverLoaded) {
 
+            panel.add(filterLabel, "split 4, grow");
+            panel.add(formatFilter);
+            panel.add(saveFilterButton, "w 18:20:22, h 18:20:22");
+            panel.add(loadFilterButton, "w 18:20:22, h 18:20:22");
+            panel.add(new Panel());
+            panel.add(messageLabel, "split 4, grow");
+            panel.add(formatMessage);
+            panel.add(saveMessageButton, "w 18:20:22, h 18:20:22");
+            panel.add(loadMessageButton, "w 18:20:22, h 18:20:22, wrap");
 
-        panel.add(filterLabel, "split 4, grow");
-        panel.add(formatFilter);
-        panel.add(saveFilterButton, "w 18:20:22, h 18:20:22");
-        panel.add(loadFilterButton, "w 18:20:22, h 18:20:22");
-        panel.add(new Panel());
-        panel.add(messageLabel, "split 4, grow");
-        panel.add(saveMessageButton, "w 18:20:22, h 18:20:22");
-        panel.add(loadMessageButton, "w 18:20:22, h 18:20:22");
-        panel.add(formatMessage, "wrap");
-        panel.add(filter.getContainerWithLines(), "grow, width 45%, height 80%");
-        panel.add(buttonsPanel);
-        panel.add(message.getContainerWithLines(), "grow, width 45%, wrap");
-        panel.add(logSP, "align center, grow, span 3, height 15%");
-        //panel.setPreferredSize(new Dimension(1200,600));
+            panel.add(filter.getContainerWithLines(), "grow, width 45%, height 80%");
+            panel.add(buttonsPanel);
+            panel.add(message.getContainerWithLines(), "grow, width 45%, wrap");
+            panel.add(logSP, "align center, grow, span 3, height 15%");
+            //panel.setPreferredSize(new Dimension(1200,600));
+        } else {
 
+            JButton downButton = new JButton("Download sqllite driver");
+            downButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    downForm("Download driver");
+                }
+            });
+
+            buttonsPanel.add(downButton, "wrap");
+
+            panel.add(filterLabel, "split 2, grow");
+            panel.add(formatFilter);
+            panel.add(new Panel());
+            panel.add(messageLabel, "split 2, grow");
+            panel.add(formatMessage, "wrap");
+            panel.add(filter.getContainerWithLines(), "grow, width 45%, height 80%");
+            panel.add(buttonsPanel);
+            panel.add(message.getContainerWithLines(), "grow, width 45%, wrap");
+            panel.add(logSP, "align center, grow, span 3, height 15%");
+        }
 
         //JScrollPane jsp = new JScrollPane(panel);
 
@@ -233,7 +258,7 @@ public class Launch extends JFrame {
         add(panel);
         pack();
         setVisible(true);
-
+        return true;
     }
 
     public void log(String msg) {
@@ -241,20 +266,24 @@ public class Launch extends JFrame {
         logArea.append((new SimpleDateFormat("dd.MM HH:mm:ss:SSS")).format(new Date()) + "::" + msg + "\n");
     }
 
-    public void setFilter(String filter){
+    public void setFilter(String filter) {
         this.filter.setText(filter);
     }
-    public void setMessage(String message){
+
+    public void setMessage(String message) {
         this.message.setText(message);
     }
 
-    private void saveForm(int type, String text, String title){
-        new SaveForm(this,type,text,title);
-    }
-    private void openForm(int type, String title){
-        new OpenForm(this,type,title);
+    private void saveForm(int type, String text, String title) {
+        new SaveForm(this, type, text, title);
     }
 
+    private void openForm(int type, String title) {
+        new OpenForm(this, type, title);
+    }
 
+    private void downForm(String title) {
+        new DownloadDriverForm(this, "http://central.maven.org/maven2/org/xerial/sqlite-jdbc/3.27.2.1/sqlite-jdbc-3.27.2.1.jar", title);
+    }
 
 }
